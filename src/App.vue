@@ -16,6 +16,15 @@
       <section class="form">
         <section>
           <b-modal v-model="modalShow" size="lg" title="Post chat message">
+            <section v-if="errors.length > 0" class="alerts">
+              <div
+                v-for="(error, j) in errors"
+                v-bind:key="j"
+                class="alert alert-danger"
+                role="alert"
+              >{{ error }}</div>
+            </section>
+
             <b-form>
               <b-form-group label="Your Name:" label-for="name">
                 <b-form-input id="name" v-model="form.name" required placeholder="Enter name"></b-form-input>
@@ -28,6 +37,7 @@
                   placeholder="Enter something..."
                   rows="3"
                   max-rows="6"
+                  class="invalid"
                 ></b-form-textarea>
               </b-form-group>
             </b-form>
@@ -40,36 +50,17 @@
         </section>
 
         <section>
-          <b-card footer="yutoogi - 2019-09-14 23:59" footer-tag="footer">
+          <b-card
+            v-for="(message, i) in messages"
+            v-bind:key="i"
+            v-bind:footer="message.userName + ' - ' + message.updatedAt"
+            footer-tag="footer"
+          >
             <b-media>
               <template v-slot:aside>
                 <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
               </template>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin.
-              Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc
-              ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-            </b-media>
-          </b-card>
-
-          <b-card footer="yutoogi - 2019-09-14 23:59" footer-tag="footer">
-            <b-media>
-              <template v-slot:aside>
-                <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
-              </template>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin.
-              Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc
-              ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-            </b-media>
-          </b-card>
-
-          <b-card footer="yutoogi - 2019-09-14 23:59" footer-tag="footer">
-            <b-media>
-              <template v-slot:aside>
-                <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
-              </template>
-              Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin.
-              Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc
-              ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+              {{ message.context }}
             </b-media>
           </b-card>
         </section>
@@ -87,18 +78,49 @@ export default {
         name: "",
         contents: ""
       },
-      modalShow: false
+      messages: [],
+      modalShow: false,
+      errors: []
     };
   },
-  computed: {},
+  computed: {
+    currentDate() {
+      const d = new Date();
+      return `${d.getFullYear()}-${d.getMonth() +
+        1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+    },
+    formIsInValid() {
+      return this.errors.length > 0;
+    }
+  },
   methods: {
     onPostMessage() {
-      console.log("submit");
+      this.checkMessageParams();
+      if (this.formIsInValid) {
+        return false;
+      }
+
+      this.messages.push({
+        userName: this.form.name,
+        context: this.form.contents,
+        updatedAt: this.currentDate
+      });
+
       this.modalShow = false;
     },
     onCancel() {
       console.log("cancel");
       this.modalShow = false;
+    },
+    checkMessageParams() {
+      this.errors = [];
+
+      if (this.form.name === "") {
+        this.errors.push('"Your Name" is required.');
+      }
+      if (this.form.contents === "") {
+        this.errors.push('"Contents" is required.');
+      }
     }
   }
 };

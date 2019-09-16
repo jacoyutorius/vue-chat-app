@@ -88,12 +88,18 @@ $ tree -L 1
 
 ---
 
-Vue の初期画面が表示される。
-
 ```
 $ npm run serve
 $ open http://localhost:8080
 ```
+
+---
+
+# 1. create vue project
+
+**point**
+
+- Vue の初期画面が表示されること
 
 ![https://i.gyazo.com/b605ecb9f9504763356f562fa8ffd805.png](https://i.gyazo.com/b605ecb9f9504763356f562fa8ffd805.png)
 
@@ -135,11 +141,6 @@ $ npm install bootstrap-vue bootstrap core-js
                       Thanks for installing bootstrap-vue 🙏
                  Please consider donating to our open collective
                         to help us maintain this package.
-
-                           Number of contributors: 230
-                              Number of backers: 41
-                             Annual budget: US$ 1,066
-                            Current balance: US$ 1,525
 ```
 
 ---
@@ -228,6 +229,16 @@ export default {
 ---
 
 ![https://i.gyazo.com/7f519243476553db3987a0e84a9b8d27.png](https://i.gyazo.com/7f519243476553db3987a0e84a9b8d27.png)
+
+---
+
+# 2. install Bootstrap
+
+**point**
+
+- Vue.js devtools でコンポーネントのプロパティを確認する
+
+![](https://i.gyazo.com/f162259c1121d8b3c4e99ee2f7467db3.png)
 
 ---
 
@@ -368,3 +379,106 @@ export default {
 ![](https://i.gyazo.com/88cc423f5d6c6cf248ba3d5409f758be.png)
 
 ---
+
+# 3. mockup
+
+**point**
+
+- モーダルダイアログの "Submit" をクリックするとログが出力される
+- モーダルダイアログの "Cancel" または 右上の "x" またはダイアログ外のエリアをクリックするとモーダルダイアログが閉じること
+
+---
+
+## 3 - 1. click event
+
+---
+
+```js
+<b-card
+  v-for="(message, i) in messages"
+  v-bind:key="i"
+  v-bind:footer="message.userName + ' - ' + message.updatedAt"
+  footer-tag="footer"
+>
+  <b-media>
+    <template v-slot:aside>
+      <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
+    </template>
+    {{ message.context }}
+  </b-media>
+</b-card>
+```
+
+---
+
+```js
+computed: {
+  currentDate() {
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth() +
+      1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
+  }
+},
+methods: {
+  onPostMessage() {
+    this.messages.push({
+      userName: this.form.name,
+      context: this.form.contents,
+      updatedAt: this.currentDate
+    });
+
+    this.modalShow = false;
+  },
+```
+
+---
+
+## 3 - 2. validation
+
+---
+
+```html
+<b-modal v-model="modalShow" size="lg" title="Post chat message">
+  <section v-if="errors.length > 0" class="alerts">
+    <div
+      v-for="(error, j) in errors"
+      v-bind:key="j"
+      class="alert alert-danger"
+      role="alert"
+    >
+      {{ error }}
+    </div>
+  </section>
+
+  <b-form></b-form
+></b-modal>
+```
+
+---
+
+## methods
+
+```js
+data() {
+  return {
+  	~
+    errors: []
+  };
+},
+onPostMessage() {
+  this.checkMessageParams();
+  if (this.formIsInValid) {
+    return false;
+  }
+
+  ~
+},
+checkMessageParams() {
+  if (this.form.name === "") {
+    this.errors.push('"Your Name" is required.');
+  }
+  if (this.form.contents === "") {
+    this.errors.push('"Contents" is required.');
+  }
+}
+```
