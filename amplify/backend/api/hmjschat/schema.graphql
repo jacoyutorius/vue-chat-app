@@ -1,0 +1,6 @@
+type HmjsChat @model {
+  id: ID!
+  user: String!
+  message: String
+  created_at: String
+}

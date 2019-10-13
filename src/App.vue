@@ -70,6 +70,12 @@
 </template>
 
 <script>
+import {
+  API,
+  graphqlOperation
+} from "aws-amplify";
+import { createHmjsChat } from "@/graphql/mutations";
+
 export default {
   name: "app",
   data() {
@@ -100,13 +106,22 @@ export default {
         return false;
       }
 
-      this.messages.push({
-        userName: this.form.name,
-        context: this.form.contents,
-        updatedAt: this.currentDate
-      });
+      this.postMessage(this.form.name, this.form.contents, this.form.currentDate)
 
       this.modalShow = false;
+    },
+    async postMessage(user, message, created_at) {
+      const params = {
+        user,
+        message,
+        created_at
+      }
+
+      await API.graphql(graphqlOperation(createHmjsChat, {
+        input: params
+      })).catch(error => {
+        console.error(error);
+      });
     },
     onCancel() {
       console.log("cancel");

@@ -1,0 +1,14 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "vue-chat-app-dev-20191013072449-authRole",
+            "UnauthRoleArn": "arn:aws:iam::865422985541:role/vue-chat-app-dev-20191013072449-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::865422985541:role/vue-chat-app-dev-20191013072449-authRole",
+            "Region": "ap-northeast-1",
+            "DeploymentBucketName": "vue-chat-app-dev-20191013072449-deployment",
+            "UnauthRoleName": "vue-chat-app-dev-20191013072449-unauthRole",
+            "StackName": "vue-chat-app-dev-20191013072449",
+            "StackId": "arn:aws:cloudformation:ap-northeast-1:865422985541:stack/vue-chat-app-dev-20191013072449/1a9b03c0-ed3f-11e9-ac8d-06fc4e058428"
+        }
+    }
+}

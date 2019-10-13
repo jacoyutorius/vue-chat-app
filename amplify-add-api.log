@@ -1,0 +1,19 @@
+$ amplify add api
+? Please select from one of the below mentioned services GraphQL
+? Provide API name: hmjschat
+? Choose an authorization type for the API API key
+? Do you have an annotated GraphQL schema? No
+? Do you want a guided schema creation? Yes
+? What best describes your project: Single object with fields (e.g., “Todo” with ID, name, de
+scription)
+? Do you want to edit the schema now? Yes
+Please edit the file in your editor: /Users/yuto-ogi/Work/aws_amplify/vue-chat-app/amplify/backend/api/hmjschat/schema.graphql
+? Press enter to continue
+
+GraphQL schema compiled successfully.
+Edit your schema at /Users/yuto-ogi/Work/aws_amplify/vue-chat-app/amplify/backend/api/hmjschat/schema.graphql or place .graphql files in a directory at /Users/yuto-ogi/Work/aws_amplify/vue-chat-app/amplify/backend/api/hmjschat/schema
+Successfully added resource hmjschat locally
+
+Some next steps:
+"amplify push" will build all your local backend resources and provision it in the cloud
+"amplify publish" will build all your local backend and frontend resources (if you have hosting category added) and provision it in the cloud
