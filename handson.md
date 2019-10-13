@@ -1,7 +1,7 @@
 footer: Hamamatsu.js Amplify + Vue.js Handson @jacoyutorius
 slidenumbers: true
 
-# Vue hands-on
+# Vue handson
 
 ### Hamamatsu.js #2019.11
 
@@ -9,7 +9,21 @@ slidenumbers: true
 
 ---
 
-#[fit] ※ AWS 関連のリソースはこちらで提供しますが、ハンズオン後数日後にそれらのリソースは削除します。
+## Yuto Ogi
+
+### @jacoyutorius
+
+Web developer, AIRS
+
+- AWS
+- Ruby
+- Javascript
+
+![left](https://i.gyazo.com/bb651994b500258e04b119444398cdab.png) 
+
+---
+
+#[fit] ※ AWS関連のリソースはこちらで提供しますが、ハンズオン後数日以内にそれらのリソースは削除します。
 
 ---
 
@@ -18,8 +32,7 @@ slidenumbers: true
 1. create vue project
 2. install Bootstrap
 3. chat mockup
-4. get chat messages from AWS
-5. post to AWS
+4. integrate Chat API
 
 ---
 
@@ -70,6 +83,7 @@ $ cd vue-chat-app
 $ subl . / atom . / code .
 ```
 
+
 ---
 
 ```bash
@@ -95,7 +109,15 @@ $ open http://localhost:8080
 
 ---
 
+![https://i.gyazo.com/b605ecb9f9504763356f562fa8ffd805.png](https://i.gyazo.com/b605ecb9f9504763356f562fa8ffd805.png)
+
+---
+
 # 1. create vue project
+
+**done**
+
+- Vueアプリケーションの初期化 
 
 **point**
 
@@ -145,51 +167,52 @@ $ npm install bootstrap-vue bootstrap core-js
 
 ---
 
-## src/main.js
+### 2. install Bootstrap
+
+**src/main.js**
 
 ```js
-+ import BootstrapVue from 'bootstrap-vue'
-+ import 'bootstrap/dist/css/bootstrap.css'
-+ import 'bootstrap-vue/dist/bootstrap-vue.css'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-+ Vue.use(BootstrapVue)
+Vue.use(BootstrapVue)
 ```
 
 ---
 
-## src/main.js
+### 2. install Bootstrap
+
+**src/main.js**
 
 ```js
-import Vue from "vue";
-import App from "./App.vue";
-import BootstrapVue from "bootstrap-vue";
-import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap-vue/dist/bootstrap-vue.css";
+import Vue from 'vue'
+import App from './App.vue'
+import BootstrapVue from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-Vue.use(BootstrapVue);
+Vue.use(BootstrapVue)
 
-Vue.config.productionTip = false;
+Vue.config.productionTip = false
 
 new Vue({
-  render: h => h(App)
-}).$mount("#app");
+  render: h => h(App),
+}).$mount('#app')
 ```
 
 ---
 
-## src/App.vue
+### 2. install Bootstrap
+
+**src/App.vue**
 
 ```html
 <div id="app">
   <b-container>
-    <b-jumbotron
-      header="BootstrapVue"
-      lead="Bootstrap v4 Components for Vue.js 2"
-    >
+    <b-jumbotron header="BootstrapVue" lead="Bootstrap v4 Components for Vue.js 2">
       <p>For more information visit our website</p>
-      <b-btn variant="primary" href="https://bootstrap-vue.js.org/"
-        >More Info</b-btn
-      >
+      <b-btn variant="primary" href="https://bootstrap-vue.js.org/">More Info</b-btn>
     </b-jumbotron>
 
     <b-form-group
@@ -206,9 +229,12 @@ new Vue({
 </div>
 ```
 
+
 ---
 
-## src/App.vue
+### 2. install Bootstrap
+
+**src/App.vue**
 
 ```js
 export default {
@@ -223,12 +249,16 @@ export default {
       return this.name.length > 4 ? true : false;
     }
   }
-};
+}
 ```
 
 ---
 
 ![https://i.gyazo.com/7f519243476553db3987a0e84a9b8d27.png](https://i.gyazo.com/7f519243476553db3987a0e84a9b8d27.png)
+
+---
+
+![](https://i.gyazo.com/f162259c1121d8b3c4e99ee2f7467db3.png) 
 
 ---
 
@@ -238,77 +268,73 @@ export default {
 
 - Vue.js devtools でコンポーネントのプロパティを確認する
 
-![](https://i.gyazo.com/f162259c1121d8b3c4e99ee2f7467db3.png)
+![](https://i.gyazo.com/f162259c1121d8b3c4e99ee2f7467db3.png)	
 
 ---
 
-# 3. mockup
+## 3. mockup
 
 ---
 
-# <template> - 1
+### 3. mockup
+
+**src/App.vue**
 
 ```html
-<div id="app">
-  <header>
-    <b-navbar variant="info" type="dark">
-      <b-navbar-brand href="#">Vue Chat</b-navbar-brand>
+  <div id="app">
+    <header>
+      <b-navbar variant="info" type="dark">
+        <b-navbar-brand href="#">Vue Chat</b-navbar-brand>
 
-      <b-navbar-nav class="ml-auto">
-        <b-nav-form>
-          <b-button @click="modalShow = !modalShow" variant="light"
-            >Post</b-button
-          >
-        </b-nav-form>
-      </b-navbar-nav>
-    </b-navbar>
-  </header>
-</div>
+        <b-navbar-nav class="ml-auto">
+          <b-nav-form>
+            <b-button @click="modalShow = !modalShow" variant="light">Post</b-button>
+          </b-nav-form>
+        </b-navbar-nav>
+      </b-navbar>
+    </header>
 ```
 
 ---
 
-# <template> - 2
+### 3. mockup
+
+**src/App.vue**
 
 ```html
-<b-container>
-  <section class="form">
-    <section>
-      <b-modal v-model="modalShow" size="lg" title="Post chat message">
-        <b-form>
-          <b-form-group label="Your Name:" label-for="name">
-            <b-form-input
-              id="name"
-              v-model="form.name"
-              required
-              placeholder="Enter name"
-            ></b-form-input>
-          </b-form-group>
+    <b-container>
+      <section class="form">
+        <section>
+          <b-modal v-model="modalShow" size="lg" title="Post chat message">
+            <b-form>
+              <b-form-group label="User:" label-for="user">
+                <b-form-input id="user" v-model="form.user" required placeholder="Enter user"></b-form-input>
+              </b-form-group>
 
-          <b-form-group label="Contents" label-for="contents">
-            <b-form-textarea
-              id="contents"
-              v-model="form.contents"
-              placeholder="Enter something..."
-              rows="3"
-              max-rows="6"
-            ></b-form-textarea>
-          </b-form-group>
-        </b-form>
+              <b-form-group label="message" label-for="message">
+                <b-form-textarea
+                  id="message"
+                  v-model="form.message"
+                  placeholder="Enter something..."
+                  rows="3"
+                  max-rows="6"
+                ></b-form-textarea>
+              </b-form-group>
+            </b-form>
 
-        <template v-slot:modal-footer="{ submit, cancel, close }">
-          <b-button variant="success" @click="onPostMessage">Submit</b-button>
-          <b-button variant="default" @click="onCancel">Cancel</b-button>
-        </template>
-      </b-modal>
-    </section>
-  </section></b-container
->
+            <template v-slot:modal-footer="{ submit, cancel, close }">
+              <b-button variant="success" @click="onPostMessage">Submit</b-button>
+              <b-button variant="default" @click="onCancel">Cancel</b-button>
+            </template>
+          </b-modal>
+        </section>
 ```
 
 ---
 
-# <template> - 3
+### 3. mockup
+
+**src/App.vue**
 
 ```html
 
@@ -332,7 +358,9 @@ export default {
 
 ---
 
-# <script>
+### 3. mockup
+
+**src/App.vue**
 
 ```js
 export default {
@@ -340,8 +368,8 @@ export default {
   data() {
     return {
       form: {
-        name: "",
-        contents: ""
+        user: "",
+        message: ""
       },
       modalShow: false
     };
@@ -358,11 +386,13 @@ export default {
     }
   }
 };
-```
+````
 
 ---
 
-# <style>
+### 3. mockup
+
+**src/App.vue**
 
 ```css
 .card {
@@ -384,58 +414,67 @@ export default {
 
 **point**
 
-- モーダルダイアログの "Submit" をクリックするとログが出力される
-- モーダルダイアログの "Cancel" または 右上の "x" またはダイアログ外のエリアをクリックするとモーダルダイアログが閉じること
-
+- モーダルダイアログの "Submit" をクリックすると console.log が出力される
+- モーダルダイアログの "Cancel" または 右上の "x" またはダイアログ外のエリアをクリックするとモーダルダイアログが閉じる
+	
 ---
 
 ## 3 - 1. click event
 
+"Submit" ボタンをクリックするとチャットメッセージが登録される。 
+
 ---
 
-```js
+### 3 - 1. click event
+
+**src/App.vue**
+
+```html
 <b-card
-  v-for="(message, i) in messages"
+  v-for="(chat, i) in chats"
   v-bind:key="i"
-  v-bind:footer="message.userName + ' - ' + message.updatedAt"
+  v-bind:footer="chat.user + ' - ' + chat.created_at"
   footer-tag="footer"
 >
   <b-media>
     <template v-slot:aside>
       <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
     </template>
-    {{ message.context }}
+    {{ chat.message }}
   </b-media>
 </b-card>
 ```
 
 ---
 
+### 3 - 1. click event
+
+**src/App.vue**
+
 ```js
-computed: {
-  currentDate() {
-    const d = new Date();
-    return `${d.getFullYear()}-${d.getMonth() +
-      1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-  }
-},
 methods: {
   onPostMessage() {
     this.messages.push({
-      userName: this.form.name,
-      context: this.form.contents,
-      updatedAt: this.currentDate
+      user: this.form.user,
+      message: this.form.message,
+      created_at: new Date().toLocaleString()
     });
 
     this.modalShow = false;
   },
-```
+````
 
 ---
 
 ## 3 - 2. validation
 
+#### ユーザー名・メッセージが入力されていない場合、エラーメッセージを表示する。
+
 ---
+
+### 3 - 2. validation
+
+**src/App.vue**
 
 ```html
 <b-modal v-model="modalShow" size="lg" title="Post chat message">
@@ -445,40 +484,250 @@ methods: {
       v-bind:key="j"
       class="alert alert-danger"
       role="alert"
-    >
-      {{ error }}
-    </div>
+    >{{ error }}</div>
   </section>
 
-  <b-form></b-form
-></b-modal>
-```
+  <b-form>
+````
 
 ---
 
-## methods
+### 3 - 2. validation
+
+**src/App.vue**
 
 ```js
 data() {
   return {
-  	~
+  	~ (略) ~
     errors: []
   };
 },
 onPostMessage() {
   this.checkMessageParams();
   if (this.formIsInValid) {
-    return false;
-  }
+    return;
+  }  
 
-  ~
+  ~ (略) ~
 },
 checkMessageParams() {
-  if (this.form.name === "") {
-    this.errors.push('"Your Name" is required.');
+  if (this.form.user === "") {
+    this.errors.push('"User" is required.');
   }
-  if (this.form.contents === "") {
-    this.errors.push('"Contents" is required.');
+  if (this.form.message === "") {
+    this.errors.push('"Message" is required.');
   }
 }
+````
+
+---
+
+## 4. integrate Chat API
+
+---
+
+## 4 - 1. copy AWS setting
+
+#### AWSの設定ファイルを組み込む
+
+---
+
+## 4 - 1. copy AWS setting
+
+**src/aws-exports.js**
+
+```js
+const awsmobile = {
+  "aws_project_region": "ap-northeast-1",
+  "aws_appsync_graphqlEndpoint": "https://izjtvc7nijhrrihcnxu2umyuzy.appsync-api.ap-northeast-1.amazonaws.com/graphql",
+  "aws_appsync_region": "ap-northeast-1",
+  "aws_appsync_authenticationType": "API_KEY",
+  "aws_appsync_apiKey": ""
+};
+
+export default awsmobile;
+````
+
+---
+
+## 4 - 1. copy AWS setting
+
+**src/graphql**
+
+---
+
+copy amplify AWS files
+
+```bash
+$ tree src
+src
+├── App.vue
+├── assets
+│   └── logo.png
+├── aws-exports.js
+├── components
+│   └── HelloWorld.vue
+├── graphql
+│   ├── mutations.js
+│   ├── queries.js
+│   ├── schema.json
+│   └── subscriptions.js
+└── main.js
+
+3 directories, 9 files
 ```
+
+---
+
+## 4 - 2. install aws-amplify
+
+#### aws-amplify をインストールする
+
+---
+
+## 4 - 2. install aws-amplify
+
+```bash
+$ npm install aws-amplify
+$ npm install aws-amplify-vue
+```
+
+---
+
+## 4 - 2. install aws-amplify
+
+**src/main.js**
+
+```js
+import Amplify, * as AmplifyModules from 'aws-amplify'
+import { AmplifyPlugin } from 'aws-amplify-vue'
+import awsconfig from './aws-exports'
+Amplify.configure(awsconfig)
+
+Vue.use(AmplifyPlugin, AmplifyModules)
+```
+
+---
+
+## 4 - 3. Query
+
+#### 画面読み込み時に登録されているチャットメッセージを取得して画面に表示する。
+
+---
+
+## 4 - 3. Query
+
+**src/App.vue**
+
+```js
+import {
+  API,
+  graphqlOperation
+} from "aws-amplify";
+import { listHmjsChats } from "@/graphql/queries";
+
+~ 略 ~
+
+async created() {
+  // get chat list
+  const listChats = await API.graphql(graphqlOperation(listHmjsChats));
+  this.chats = listChats.data.listHmjsChats.items;
+````
+
+---
+
+## 4 - 4. Post
+
+#### メッセージをAPIにPOSTする。
+
+---
+
+## 4 - 4. Post
+
+**src/App.vue**
+
+```js
+import { createHmjsChat } from "@/graphql/mutations";
+
+computed: {
+  ~ 略 ~
+  chatParams() {
+    return {
+      ...this.form,
+      created_at: new Date().toLocaleString()
+    };
+  }
+},
+````
+
+---
+
+## 4 - 4. Post
+
+**src/App.vue**
+
+```js
+onPostMessage() {
+  this.checkMessageParams();
+  if (this.formIsInValid) {
+    return;
+  }
+
+  this.postMessage();
+
+  this.modalShow = false;
+},
+```
+
+---
+
+## 4 - 4. Post
+
+**src/App.vue**
+
+```js
+async postMessage() {
+  await API.graphql(
+    graphqlOperation(createHmjsChat, {
+      input: this.chatParams
+    })
+  ).catch(error => {
+    console.error(error);
+  });
+},
+```
+
+---
+
+## 4 - 5. Subscribe
+
+#### データベースへの更新を購読する。
+
+---
+
+## 4 - 5. Subscribe
+
+**src/App.vue**
+
+```js
+import { onCreateHmjsChat } from "@/graphql/subscriptions";
+```
+
+```js
+created() {
+  const subscription = API.graphql(
+    graphqlOperation(onCreateHmjsChat)
+  ).subscribe({
+    next: chat => {
+      this.chats.push(chat.value.data.onCreateHmjsChat);
+    }
+  });
+},
+```
+
+---
+
+![inline](https://i.gyazo.com/bf61c6fa1d1ffa221546db72522bec05.gif)
+
+お疲れさまでした。

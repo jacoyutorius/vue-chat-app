@@ -26,18 +26,17 @@
             </section>
 
             <b-form>
-              <b-form-group label="Your Name:" label-for="name">
-                <b-form-input id="name" v-model="form.name" required placeholder="Enter name"></b-form-input>
+              <b-form-group label="User:" label-for="user">
+                <b-form-input id="user" v-model="form.user" required placeholder="Enter user"></b-form-input>
               </b-form-group>
 
-              <b-form-group label="Contents" label-for="contents">
+              <b-form-group label="message" label-for="message">
                 <b-form-textarea
-                  id="contents"
-                  v-model="form.contents"
+                  id="message"
+                  v-model="form.message"
                   placeholder="Enter something..."
                   rows="3"
                   max-rows="6"
-                  class="invalid"
                 ></b-form-textarea>
               </b-form-group>
             </b-form>
@@ -51,16 +50,16 @@
 
         <section>
           <b-card
-            v-for="(message, i) in messages"
+            v-for="(chat, i) in chats"
             v-bind:key="i"
-            v-bind:footer="message.userName + ' - ' + message.updatedAt"
+            v-bind:footer="chat.user + ' - ' + chat.created_at"
             footer-tag="footer"
           >
             <b-media>
               <template v-slot:aside>
                 <b-img blank blank-color="#ccc" width="64" alt="placeholder"></b-img>
               </template>
-              {{ message.context }}
+              {{ chat.message }}
             </b-media>
           </b-card>
         </section>
@@ -70,71 +69,82 @@
 </template>
 
 <script>
-import {
-  API,
-  graphqlOperation
-} from "aws-amplify";
+import { API, graphqlOperation } from "aws-amplify";
 import { createHmjsChat } from "@/graphql/mutations";
+import { listHmjsChats } from "@/graphql/queries";
+import { onCreateHmjsChat } from "@/graphql/subscriptions";
 
 export default {
-  name: "app",
+  user: "app",
   data() {
     return {
       form: {
-        name: "",
-        contents: ""
+        user: "",
+        message: ""
       },
-      messages: [],
+      chats: [],
       modalShow: false,
       errors: []
     };
   },
   computed: {
-    currentDate() {
-      const d = new Date();
-      return `${d.getFullYear()}-${d.getMonth() +
-        1}-${d.getDate()} ${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}`;
-    },
     formIsInValid() {
       return this.errors.length > 0;
+    },
+    chatParams() {
+      return {
+        ...this.form,
+        created_at: new Date().toLocaleString()
+      };
     }
   },
+
+  async created() {
+    // get chat list
+    const listChats = await API.graphql(graphqlOperation(listHmjsChats));
+    this.chats = listChats.data.listHmjsChats.items;
+
+    // subscribe
+    const subscription = API.graphql(
+      graphqlOperation(onCreateHmjsChat)
+    ).subscribe({
+      next: chat => {
+        this.chats.push(chat.value.data.onCreateHmjsChat);
+      }
+    });
+  },
+
   methods: {
     onPostMessage() {
       this.checkMessageParams();
       if (this.formIsInValid) {
-        return false;
+        return;
       }
 
-      this.postMessage(this.form.name, this.form.contents, this.form.currentDate)
+      this.postMessage();
 
       this.modalShow = false;
     },
-    async postMessage(user, message, created_at) {
-      const params = {
-        user,
-        message,
-        created_at
-      }
-
-      await API.graphql(graphqlOperation(createHmjsChat, {
-        input: params
-      })).catch(error => {
+    async postMessage() {
+      await API.graphql(
+        graphqlOperation(createHmjsChat, {
+          input: this.chatParams
+        })
+      ).catch(error => {
         console.error(error);
       });
     },
     onCancel() {
-      console.log("cancel");
       this.modalShow = false;
     },
     checkMessageParams() {
       this.errors = [];
 
-      if (this.form.name === "") {
-        this.errors.push('"Your Name" is required.');
+      if (this.form.user === "") {
+        this.errors.push('"User" is required.');
       }
-      if (this.form.contents === "") {
-        this.errors.push('"Contents" is required.');
+      if (this.form.message === "") {
+        this.errors.push('"message" is required.');
       }
     }
   }
