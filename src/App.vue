@@ -100,12 +100,11 @@ export default {
   },
 
   async created() {
-    // get chat list
     const listChats = await API.graphql(graphqlOperation(listHmjsChats));
     this.chats = listChats.data.listHmjsChats.items;
 
     // subscribe
-    const subscription = API.graphql(
+    API.graphql(
       graphqlOperation(onCreateHmjsChat)
     ).subscribe({
       next: chat => {
@@ -124,6 +123,8 @@ export default {
       this.postMessage();
 
       this.modalShow = false;
+      this.form.user = "";
+      this.form.message = "";
     },
     async postMessage() {
       await API.graphql(
